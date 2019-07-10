@@ -289,7 +289,8 @@ public interface JavaSemantics {
       List<String> jvmFlags,
       Artifact executable,
       String javaStartClass,
-      String javaExecutable)
+      String javaExecutable,
+      String jarExecutable)
       throws InterruptedException;
 
   /**
@@ -311,6 +312,7 @@ public interface JavaSemantics {
       String coverageStartClass,
       NestedSetBuilder<Artifact> filesBuilder,
       String javaExecutable,
+      String jarExecutable,
       boolean createCoverageMetadataJar)
       throws InterruptedException;
 

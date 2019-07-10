@@ -231,6 +231,9 @@ fi
 # Set JAVABIN to the path to the JVM launcher.
 %javabin%
 
+# Set JARBIN to the path to the JVM launcher.
+%jarbin%
+
 if [[ "$PRINT_JAVABIN" == 1 || "%java_start_class%" == "--print_javabin" ]]; then
   echo -n "$JAVABIN"
   exit 0
@@ -351,10 +354,11 @@ if [ -z "$CLASSPATH_LIMIT" ]; then
   is_windows && CLASSPATH_LIMIT=7000 || CLASSPATH_LIMIT=120000
 fi
 
+
 if is_windows && (("${#CLASSPATH}" > ${CLASSPATH_LIMIT} )); then
-  create_and_run_classpath_jar "local_jdk/bin/jar.exe"
+  create_and_run_classpath_jar "${JARBIN}.exe"
 elif (("${#CLASSPATH}" > ${CLASSPATH_LIMIT})); then
-  create_and_run_classpath_jar "local_jdk/bin/jar"
+  create_and_run_classpath_jar "$JARBIN"
 else
   exec $JAVABIN -classpath $CLASSPATH "${ARGS[@]}"
 fi

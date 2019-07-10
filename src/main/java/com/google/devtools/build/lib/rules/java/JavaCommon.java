@@ -520,6 +520,45 @@ public class JavaCommon {
   }
 
   /**
+   * Returns the path of the jar executable that the java stub should use.
+   * We use the code to find the java executable to find its sibling of jar.
+   *
+   * @param launcher if non-null, the cc_binary used to launch the Java Virtual Machine
+   */
+ public static String getJarExecutableForStub(
+      RuleContext ruleContext, @Nullable Artifact launcher) {
+  String javaExecutableStr = getJavaExecutableForStub(ruleContext, launcher);
+  PathFragment jarExecutable = PathFragment.create(javaExecutableStr).getRelative("jar");
+  return jarExecutable.getPathString();
+ }
+
+  /**
+   * Returns the shell command that computes `JARBIN`. The command derives the JVM location from a
+   * given jar executable path.
+   *
+   */
+  public static String getJarBinSubstitutionFromJavaExecutable(
+      RuleContext ruleContext, String jarExecutableStr) {
+    PathFragment jarExecutable = PathFragment.create(jarExecutableStr);
+    if (ruleContext.getConfiguration().runfilesEnabled()) {
+      String prefix = "";
+      if (!jarExecutable.isAbsolute()) {
+        prefix = "${JAVA_RUNFILES}/";
+      }
+      return "JARBIN=${JARBIN:-" + prefix + jarExecutable.getPathString() + "}";
+    } else {
+      return "JARBIN=${JARBIN:-$(rlocation " + jarExecutable.getPathString() + ")}";
+    }
+  }
+
+  /** Returns the string that the stub should use to determine the JVM binary (java) path */
+  public static String getJarBinSubstitution(
+      RuleContext ruleContext, @Nullable Artifact launcher) {
+    return getJarBinSubstitutionFromJavaExecutable(
+        ruleContext, getJarExecutableForStub(ruleContext, launcher));
+  }
+
+  /**
    * Returns the shell command that computes `JAVABIN`. The command derives the JVM location from a
    * given Java executable path.
    */

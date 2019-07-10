@@ -267,10 +267,13 @@ public class JavaBinary implements RuleConfiguredTargetFactory {
     Artifact executableToRun = executableForRunfiles;
     if (createExecutable) {
       String javaExecutable;
+      String jarExecutable;
       if (semantics.isJavaExecutableSubstitution()) {
         javaExecutable = JavaCommon.getJavaBinSubstitution(ruleContext, launcher);
+        jarExecutable = JavaCommon.getJarBinSubstitution(ruleContext, launcher);
       } else {
         javaExecutable = JavaCommon.getJavaExecutableForStub(ruleContext, launcher);
+        jarExecutable = JavaCommon.getJarExecutableForStub(ruleContext, launcher);
       }
       // Create a shell stub for a Java application
       executableToRun =
@@ -283,6 +286,7 @@ public class JavaBinary implements RuleConfiguredTargetFactory {
               originalMainClass,
               filesBuilder,
               javaExecutable,
+              jarExecutable,
               /* createCoverageMetadataJar= */ false);
       if (!executableToRun.equals(executableForRunfiles)) {
         filesBuilder.add(executableToRun);

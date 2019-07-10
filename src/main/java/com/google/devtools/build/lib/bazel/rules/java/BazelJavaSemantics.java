@@ -267,7 +267,8 @@ public class BazelJavaSemantics implements JavaSemantics {
       List<String> jvmFlags,
       Artifact executable,
       String javaStartClass,
-      String javaExecutable) {
+      String javaExecutable,
+      String jarExecutable) {
     return createStubAction(
         ruleContext,
         javaCommon,
@@ -277,6 +278,7 @@ public class BazelJavaSemantics implements JavaSemantics {
         "",
         NestedSetBuilder.<Artifact>stableOrder(),
         javaExecutable,
+        jarExecutable,
         /* createCoverageMetadataJar= */ true);
   }
 
@@ -290,6 +292,7 @@ public class BazelJavaSemantics implements JavaSemantics {
       String coverageStartClass,
       NestedSetBuilder<Artifact> filesBuilder,
       String javaExecutable,
+      String jarExecutable,
       boolean createCoverageMetadataJar) {
     Preconditions.checkState(ruleContext.getConfiguration().hasFragment(JavaConfiguration.class));
 
@@ -297,6 +300,7 @@ public class BazelJavaSemantics implements JavaSemantics {
     Preconditions.checkNotNull(executable);
     Preconditions.checkNotNull(javaStartClass);
     Preconditions.checkNotNull(javaExecutable);
+    Preconditions.checkNotNull(jarExecutable);
 
     List<Substitution> arguments = new ArrayList<>();
     String workspaceName = ruleContext.getWorkspaceName();
@@ -308,6 +312,10 @@ public class BazelJavaSemantics implements JavaSemantics {
         Substitution.of(
             "%javabin%",
             JavaCommon.getJavaBinSubstitutionFromJavaExecutable(ruleContext, javaExecutable)));
+    arguments.add(
+        Substitution.of(
+            "%jarbin%",
+            JavaCommon.getJarBinSubstitutionFromJavaExecutable(ruleContext, javaExecutable)));
     arguments.add(Substitution.of("%needs_runfiles%",
         JavaCommon.getJavaExecutable(ruleContext).isAbsolute() ? "0" : "1"));
 

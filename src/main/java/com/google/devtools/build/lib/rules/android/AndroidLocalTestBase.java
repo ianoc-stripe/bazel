@@ -259,10 +259,13 @@ public abstract class AndroidLocalTestBase implements RuleConfiguredTargetFactor
     Artifact launcher = JavaHelper.launcherArtifactForTarget(javaSemantics, ruleContext);
 
     String javaExecutable;
+    String jarExecutable;
     if (javaSemantics.isJavaExecutableSubstitution()) {
       javaExecutable = JavaCommon.getJavaBinSubstitution(ruleContext, launcher);
+      jarExecutable = JavaCommon.getJarBinSubstitution(ruleContext, launcher);
     } else {
       javaExecutable = JavaCommon.getJavaExecutableForStub(ruleContext, launcher);
+      jarExecutable = JavaCommon.getJarExecutableForStub(ruleContext, launcher);
     }
 
     javaSemantics.createStubAction(
@@ -274,6 +277,7 @@ public abstract class AndroidLocalTestBase implements RuleConfiguredTargetFactor
         originalMainClass,
         filesToBuildBuilder,
         javaExecutable,
+        jarExecutable,
         /* createCoverageMetadataJar= */ true);
 
     Artifact oneVersionOutputArtifact = null;
